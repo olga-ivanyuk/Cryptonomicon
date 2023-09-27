@@ -107,18 +107,7 @@
           {{ sel.name }} - USD
         </h3>
         <div class="flex items-end border-gray-600 border-b border-l h-64">
-          <div
-              class="bg-purple-800 border w-10 h-24"
-          ></div>
-          <div
-              class="bg-purple-800 border w-10 h-32"
-          ></div>
-          <div
-              class="bg-purple-800 border w-10 h-48"
-          ></div>
-          <div
-              class="bg-purple-800 border w-10 h-16"
-          ></div>
+          <div class="bg-purple-800 border w-10"></div>
         </div>
         <button
             @click="sel = null"
@@ -168,19 +157,22 @@ export default {
 
   methods: {
     add() {
-      const newTicker = {
+      const currentTicker = {
         name: this.ticker,
-        price: "-"
+        price: "-",
+        graph: [],
       };
 
-      this.tickers.push(newTicker);
+      this.tickers.push(currentTicker);
       setInterval(async () => {
-        const f = await fetch(`https://min-api-v2.cryptocompare.com/data/price?fsym=${newTicker.name}&tsyms=USD&api_key=0ca2bff1a316e384166c529bb2983c7e3d60a6c171a4bbe9fdcfefd05db52518`
+        const f = await fetch(`https://min-api-v2.cryptocompare.com/data/price?fsym=${currentTicker.name}&tsyms=USD&api_key=0ca2bff1a316e384166c529bb2983c7e3d60a6c171a4bbe9fdcfefd05db52518`
         );
         const data = await f.json();
-        this.tickers.find(t => t.name === newTicker.name).price =
+        this.tickers.find(t => t.name === currentTicker.name).price =
             data.USD > 1 ? data.USD.toFixed(2) : data.USD.toPrecision(2);
-        // newTicker.price = data.USD;
+        if (this.sel.name === currentTicker.name) {
+          this.graph.push(data.USD);
+        }
       }, 5000)
       this.ticker = '';
     },
